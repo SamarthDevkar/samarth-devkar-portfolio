@@ -1,0 +1,10 @@
+# Build artefacts and local QA output, never needed to build the site,
+# and uploading them slows every deployment down.
+node_modules
+.next
+screenshots
+lighthouse
+playwright-report
+test-results
+blob-report
+playwright/.cache

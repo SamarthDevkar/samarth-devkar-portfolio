@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+/* Class-based theming. Dark is the designed default and applies with no JS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   DESIGN TOKENS, "Instrument"
+   A computational research interface: dark instrument panel
+   surfaces, editorial serif display, monospace metadata, and a
+   single sodium-amber signal colour. Deliberately not neon
+   green, not purple gradient, not glassmorphism.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces, cool blue-ink, low chroma so the signal colour carries all emphasis */
+  --canvas: oklch(0.155 0.012 255);
+  --surface: oklch(0.195 0.014 255);
+  --surface-2: oklch(0.235 0.016 255);
+  --line: oklch(0.3 0.018 255);
+  --line-strong: oklch(0.4 0.02 255);
+
+  /* Text, all three verified ≥ 4.5:1 on --base */
+  --ink: oklch(0.965 0.004 255);
+  --ink-2: oklch(0.79 0.012 255);
+  --ink-3: oklch(0.635 0.014 255);
+
+  /* Signal, sodium amber, the single accent */
+  --signal: oklch(0.795 0.145 78);
+  --signal-dim: oklch(0.62 0.12 78);
+  --signal-contrast: oklch(0.16 0.02 78);
+
+  /* Severity ramp, used only where triage semantics are real */
+  --sev-info: oklch(0.72 0.1 232);
+  --sev-low: oklch(0.78 0.1 175);
+  --sev-medium: oklch(0.8 0.145 78);
+  --sev-high: oklch(0.72 0.165 45);
+  --sev-critical: oklch(0.66 0.2 22);
+
+  --focus: oklch(0.85 0.13 90);
+  --selection: oklch(0.795 0.145 78 / 0.25);
+}
+
+.light {
+  color-scheme: light;
+
+  --canvas: oklch(0.985 0.003 90);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.962 0.004 90);
+  --line: oklch(0.9 0.006 90);
+  --line-strong: oklch(0.8 0.008 90);
+
+  --ink: oklch(0.21 0.015 255);
+  --ink-2: oklch(0.38 0.015 255);
+  /* Darker than it looks like it should be. At oklch(0.498) this rendered
+     #7a7f85, which is 4.0:1 on the white card surface and fails WCAG AA for
+     the 12px monospace metadata it is used on. Verified with axe. */
+  --ink-3: oklch(0.43 0.015 255);
+
+  /* Likewise: oklch(0.52) rendered #af712e at 3.98:1. */
+  --signal: oklch(0.46 0.12 55);
+  --signal-dim: oklch(0.62 0.12 58);
+  --signal-contrast: oklch(0.99 0.01 90);
+
+  --sev-info: oklch(0.5 0.12 232);
+  --sev-low: oklch(0.48 0.1 175);
+  --sev-medium: oklch(0.55 0.13 62);
+  --sev-high: oklch(0.53 0.17 40);
+  --sev-critical: oklch(0.5 0.2 22);
+
+  --focus: oklch(0.45 0.15 60);
+  --selection: oklch(0.52 0.13 58 / 0.18);
+}
+
+@theme inline {
+  /* NOTE: this token is `canvas`, not `base`, on purpose.
+     A token named `base` makes Tailwind generate a *colour* utility called
+     `text-base`, which shadows Tailwind's built-in `text-base` font-size
+     utility. Anything written `sm:text-base` then painted its text in the
+     page background colour and vanished. Do not rename this back. */
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-signal: var(--signal);
+  --color-signal-dim: var(--signal-dim);
+  --color-signal-contrast: var(--signal-contrast);
+  --color-sev-info: var(--sev-info);
+  --color-sev-low: var(--sev-low);
+  --color-sev-medium: var(--sev-medium);
+  --color-sev-high: var(--sev-high);
+  --color-sev-critical: var(--sev-critical);
+  --color-focus: var(--focus);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Fluid type scale.
+     Tracking is tighter than the previous serif setting, a geometric sans at
+     display size needs negative letter-spacing to avoid looking loose, and
+     hierarchy now comes from weight contrast rather than a change of family. */
+  --text-display: clamp(2.5rem, 1.05rem + 5.8vw, 5.5rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.042em;
+  --text-h1: clamp(2rem, 1.15rem + 3.4vw, 3.5rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.034em;
+  --text-h2: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+  --text-h2--line-height: 1.18;
+  --text-h2--letter-spacing: -0.026em;
+  --text-h3: clamp(1.15rem, 1rem + 0.6vw, 1.4rem);
+  --text-h3--line-height: 1.35;
+  --text-h3--letter-spacing: -0.016em;
+  --text-lead: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem);
+  --text-lead--line-height: 1.6;
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.08em;
+
+  /* Radii, tight, instrument-like */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-reveal: reveal 0.62s var(--ease-out-expo) both;
+  --animate-sweep: sweep 3.4s linear infinite;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sweep {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv05" 1, "ss01" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--selection);
+    color: var(--ink);
+  }
+
+  /* Visible focus everywhere, never removed. Applied on keyboard focus
+     so pointer users don't see rings, but the ring is always available. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Honour the OS reduced-motion setting globally. Every animation in
+     this project is decorative or has a static equivalent, so disabling
+     all of them loses no information. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Hairline grid backdrop, the "instrument panel" texture.
+   Pure CSS, no image request, no particles. */
+@utility grid-field {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 78%);
+}
+
+@utility rule {
+  border-top: 1px solid var(--line);
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   Visible by default. The hidden state is scoped to `.js`, which the
+   pre-paint inline script adds to <html>, so content is only ever
+   hidden once something exists that can reveal it again. No JS, failed
+   hydration, or dead observer all degrade to fully visible content.
+   ============================================================ */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.js [data-reveal][data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.62s var(--ease-out-expo),
+    transform 0.62s var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
